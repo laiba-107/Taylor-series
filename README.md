@@ -23,3 +23,43 @@ Enter the function f(x) in terms of x: sin(x)
 Enter the center c of the Taylor series: 0
 Enter the degree n of the Taylor polynomial: 4
 This example will compute the 4th-degree Taylor polynomial for sin(x) centered at 0 and plot it alongside the original sine function.
+
+# code
+from sympy import symbols, diff, factorial, sympify, lambdify
+import numpy as np
+import matplotlib.pyplot as plt
+
+def taylor_polynomial_and_graph():
+    f_x = input("Enter the function f(x) in terms of x: ")
+    c = float(input("Enter the center c of the Taylor series: "))
+    n = int(input("Enter the degree n of the Taylor polynomial: "))
+    
+    x = symbols('x')
+    f = sympify(f_x)
+    
+    P_n = 0  
+    
+    for i in range(n+1):
+        f_i = diff(f, x, i).subs(x, c)
+        P_n += f_i/factorial(i) * (x-c)**i
+        
+    print(f"P_{n}(x) about c = {c}:", P_n)
+    
+    f_lambdified = lambdify(x, f, modules=['numpy'])
+    P_n_lambdified = lambdify(x, P_n, modules=['numpy'])
+    
+    x_vals = np.linspace(c - 5, c + 5, 400)
+    f_vals = f_lambdified(x_vals)
+    P_n_vals = P_n_lambdified(x_vals)
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(x_vals, f_vals, label=f'f(x) = {f_x}')
+    plt.plot(x_vals, P_n_vals, label=f'P_{n}(x) Taylor Polynomial', linestyle='--')
+    plt.legend()
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(f'Function vs. Taylor Polynomial Approximation around c = {c}')
+    plt.grid(True)
+    plt.show()
+
+taylor_polynomial_and_graph()
